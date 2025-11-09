@@ -1,68 +1,28 @@
-package ID_7ihjIP8i;
+package ID_Wc1rBedr;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Arrays;
 
 public class RMIClient {
-    private static boolean nextPermutation(int[] a, int n) {
-        int i = n - 2;
-        while(i >= 0 && a[i] >= a[i+1]) {
-            --i;
-        }
-        if (i<0) return false;
-        int j = n-1;
-        while(a[i] >= a[j]) --j;
-
-        swap(a, i, j);
-        int left = i + 1, right = n - 1;
-        while(left < right) {
-            swap(a, left, right);
-            left++;
-            right--;
-        }
-        return true;
-    }
-
-    private static void swap(int[] a, int i, int j) {
-        int tmp = a[i];
-        a[i] = a[j];
-        a[j] = tmp;
-    }
 
     public static void main(String[] args) {
         String host = "203.162.10.109";
         String studentCode = "B22DCCN154";
-        String qCode = "7ihjIP8i";
+        String qCode = "Wc1rBedr";
 
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            DataService byteService = (DataService) registry.lookup("RMIDataService");
+            ObjectService byteService = (ObjectService) registry.lookup("RMIObjectService");
 
-            String data = (String) byteService.requestData(studentCode, qCode);
-            System.out.println(data);
+            Order order = (Order) byteService.requestObject(studentCode, qCode);
+            System.out.println(order);
 
-            String[] numStr = data.split(", ");
-            int[] a = new int[numStr.length];
-            for (int i=0; i<numStr.length; i++) {
-                a[i] = Integer.parseInt(numStr[i]);
-            }
+            String newOrderCode = order.getShippingType().substring(0, 2).toUpperCase() + order.getCustomerCode().substring(order.getCustomerCode().length() - 3) + order.getOrderDate().substring(8) + order.getOrderDate().substring(5, 7);
+            order.setOrderCode(newOrderCode);
 
-            StringBuilder request = new StringBuilder();
-            if (nextPermutation(a, a.length)) {
-                for (int x: a) {
-                    request.append(x).append(",");
-                }
-                System.out.println(request);
-            } else {
-                Arrays.sort(a);
-                for (int x: a) {
-                    request.append(x).append(",");
-                }
-                System.out.println(request);
-            }
+            System.out.println(order);
 
-            byteService.submitData(studentCode, qCode, request.substring(0, request.toString().length() - 1));
+            byteService.submitObject(studentCode, qCode, order);
         } catch(Exception e) {
             e.printStackTrace();
         }
