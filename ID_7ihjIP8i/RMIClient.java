@@ -1,4 +1,4 @@
-package Wc1rBedr;
+package ID_7ihjIP8i;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
